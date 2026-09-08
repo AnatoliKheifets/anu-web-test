@@ -4,15 +4,18 @@
 from __future__ import annotations
 
 import argparse
+from html import unescape
 import os
 from pathlib import Path, PurePosixPath
+import posixpath
+import re
 import shutil
 import ssl
 import sys
 import tempfile
 import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 from urllib.request import Request, urlopen
 
 
@@ -22,6 +25,13 @@ EXPECTED_PAGES = 29
 EXPECTED_ASSETS = 241
 EXPECTED_TOTAL = 270
 HTML_TYPES = {"text/html", "application/xhtml+xml"}
+REFERENCE_ATTRIBUTE = re.compile(
+    r"(?P<prefix>\b(?:href|src|action|poster|data)\s*=\s*)"
+    r"(?P<quote>['\"])(?P<value>.*?)(?P=quote)",
+    re.IGNORECASE,
+)
+EXTERNAL_SCHEMES = ("http://", "https://", "mailto:", "javascript:", "data:")
+MISSING_REFERENCE_FALLBACKS = {"iswamp/pics/iswampfavicon.ico": "favicon.ico"}
 
 
 def load_manifest() -> list[str]:
@@ -77,9 +87,9 @@ def fetch(key: str, attempts: int = 3) -> tuple[bytes, str]:
     raise AssertionError("unreachable")
 
 
-def restore(root: Path) -> tuple[int, int]:
+def restore(root: Path) -> tuple[list[Path], int]:
     """Download every manifest entry without modifying response bodies."""
-    page_count = 0
+    pages: list[Path] = []
     asset_count = 0
     for key in load_manifest():
         data, content_type = fetch(key)
@@ -87,10 +97,10 @@ def restore(root: Path) -> tuple[int, int]:
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(data)
         if content_type in HTML_TYPES:
-            page_count += 1
+            pages.append(destination)
         else:
             asset_count += 1
-    return page_count, asset_count
+    return pages, asset_count
 
 
 def verify(root: Path, pages: int, assets: int) -> None:
@@ -108,6 +118,81 @@ def verify(root: Path, pages: int, assets: int) -> None:
     print(f"Verified archive: {pages} rendered pages, {assets} assets, {total} files")
 
 
+def split_reference(reference: str) -> tuple[str, str]:
+    """Split a reference without normalizing or discarding its query/fragment."""
+    indices = [index for marker in "?#" if (index := reference.find(marker)) >= 0]
+    split_at = min(indices) if indices else len(reference)
+    return reference[:split_at], reference[split_at:]
+
+
+def deploy_reference(reference: str, page: Path, root: Path) -> str:
+    """Make an origin-rooted reference relative to its archived page."""
+    lower = reference.lower()
+    if reference.startswith("//") or lower.startswith(EXTERNAL_SCHEMES):
+        return reference
+    path, suffix = split_reference(reference)
+    if path.startswith("/"):
+        archive_path = path.lstrip("/")
+        if not archive_path or archive_path.endswith("/"):
+            archive_path += "index.html"
+    else:
+        page_directory = page.parent.relative_to(root).as_posix()
+        archive_path = posixpath.normpath(posixpath.join(page_directory, path))
+        if archive_path not in MISSING_REFERENCE_FALLBACKS:
+            return reference
+    archive_path = MISSING_REFERENCE_FALLBACKS.get(archive_path, archive_path)
+    relative = posixpath.relpath(archive_path, page.parent.relative_to(root).as_posix())
+    return relative + suffix
+
+
+def prepare_pages(root: Path, pages: list[Path]) -> None:
+    """Rewrite references in rendered pages, without touching asset bytes."""
+    for page in pages:
+        text = page.read_text(encoding="utf-8")
+
+        def replace(match: re.Match[str]) -> str:
+            value = deploy_reference(match.group("value"), page, root)
+            return match.group("prefix") + match.group("quote") + value + match.group("quote")
+
+        page.write_text(REFERENCE_ATTRIBUTE.sub(replace, text), encoding="utf-8")
+
+
+def validate_references(root: Path, pages: list[Path]) -> None:
+    """Fail with an explicit list of local page references absent from the archive."""
+    unresolved: list[str] = []
+    for page in pages:
+        text = page.read_text(encoding="utf-8")
+        for match in REFERENCE_ATTRIBUTE.finditer(text):
+            reference = unescape(match.group("value").strip())
+            lower = reference.lower()
+            if (
+                not reference
+                or reference.startswith("#")
+                or reference.startswith("//")
+                or lower.startswith(EXTERNAL_SCHEMES)
+            ):
+                continue
+            path, _ = split_reference(reference)
+            if not path:
+                continue
+            candidate = Path(posixpath.normpath((page.parent / unquote(path)).as_posix()))
+            if not candidate.is_absolute():
+                candidate = Path.cwd() / candidate
+            try:
+                candidate.relative_to(root)
+            except ValueError:
+                unresolved.append(f"{page.relative_to(root)}: {reference} (outside archive)")
+                continue
+            if path.endswith("/"):
+                candidate /= "index.html"
+            if not candidate.is_file():
+                unresolved.append(f"{page.relative_to(root)}: {reference}")
+    if unresolved:
+        details = "\n  ".join(unresolved)
+        raise RuntimeError(f"unresolved internal references ({len(unresolved)}):\n  {details}")
+    print(f"Validated internal references in {len(pages)} rendered pages")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("icpeac30-archive"))
@@ -118,7 +203,9 @@ def main() -> int:
     temporary = Path(tempfile.mkdtemp(prefix=".icpeac30-", dir=output.parent))
     try:
         pages, assets = restore(temporary)
-        verify(temporary, pages, assets)
+        verify(temporary, len(pages), assets)
+        prepare_pages(temporary, pages)
+        validate_references(temporary, pages)
         if output.exists():
             shutil.rmtree(output)
         os.replace(temporary, output)
