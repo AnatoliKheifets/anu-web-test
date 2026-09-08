@@ -32,22 +32,22 @@
         <td align="center" valign="top" class="contentCell"><table width="900" border="0" cellpadding="0" cellspacing="0" id="contentTable">
           <tr>
             <td align="left" valign="top" class="links">
-<a href='index.php'>WELCOME</a>
-<a href='scope.php'>SCOPE AND PROGRAM</a>
-<a href='speakers.php'>SPEAKERS</a>
-<a href='posterlist.php'>ABSTRACTS/POSTERS</a>
-<a href='dates.php'>DATES / ANNOUNCEMENTS</a>
-<a href='venue.php'>LOCATION AND VENUE</a>
-<a href='accommodation.php'>ACCOMMODATION</a>
-<a href='registration.php'>REGISTRATION</a>
+<a href='/index.php'>WELCOME</a>
+<a href='/scope.php'>SCOPE AND PROGRAM</a>
+<a href='/speakers.php'>SPEAKERS</a>
+<a href='/posterlist.php'>ABSTRACTS/POSTERS</a>
+<a href='/dates.php'>DATES / ANNOUNCEMENTS</a>
+<a href='/venue.php'>LOCATION AND VENUE</a>
+<a href='/accommodation.php'>ACCOMMODATION</a>
+<a href='/registration.php'>REGISTRATION</a>
 <span class="current">TRAVEL</span>
-<a href='proceedings.php'>PROCEEDINGS & MEDIA</a>
-<a href='social_programme.php'>SOCIAL PROGRAM</a>
-<a href='prizes.php'>SUPPORT AND PRIZES</a>
-<a href='meetings.php'>SATELLITE MEETINGS</a>
-<a href='exhibitors_sponsors.php'>SPONSORS / EXHIBITORS</a>
-<a href='committees.php'>COMMITTEES</a>
-<a href='contacts.php'>CONTACTS</a>
+<a href='/proceedings.php'>PROCEEDINGS & MEDIA</a>
+<a href='/social_programme.php'>SOCIAL PROGRAM</a>
+<a href='/prizes.php'>SUPPORT AND PRIZES</a>
+<a href='/meetings.php'>SATELLITE MEETINGS</a>
+<a href='/exhibitors_sponsors.php'>SPONSORS / EXHIBITORS</a>
+<a href='/committees.php'>COMMITTEES</a>
+<a href='/contacts.php'>CONTACTS</a>
 <table width="165" border="0" cellpadding="0" cellspacing="0" id="anuTable">
                 <tr>
                   <td class="sponsorcell"><p>MAJOR SPONSORS</p></td>
@@ -80,7 +80,7 @@
  
 <h1>Travel</h1>
 
-<img src="_images/Connections-592x410.jpg" width="592" height="410" />
+<img src="/_images/Connections-592x410.jpg" width="592" height="410" />
 
 <p>Cairns International Airport is Australia’s gateway to the Asia Pacific and is located only 10 minutes from the centre of Cairns.</p>
 
