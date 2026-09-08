@@ -1,0 +1,39 @@
+name: Build ICPEAC 30 archive
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/archive_icpeac30.py
+      - .github/workflows/build-icpeac30-archive.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Create import branch
+        run: git switch -C icpeac30-import
+
+      - name: Download and verify archive
+        run: python3 scripts/archive_icpeac30.py
+
+      - name: Commit archive
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add icpeac30-archive/
+          git commit -m "Archive ICPEAC 30 conference website"
+
+      - name: Push import branch
+        run: git push --force-with-lease origin icpeac30-import
