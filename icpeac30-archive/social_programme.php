@@ -32,22 +32,22 @@
         <td align="center" valign="top" class="contentCell"><table width="900" border="0" cellpadding="0" cellspacing="0" id="contentTable">
           <tr>
             <td align="left" valign="top" class="links">
-<a href='index.php'>WELCOME</a>
-<a href='scope.php'>SCOPE AND PROGRAM</a>
-<a href='speakers.php'>SPEAKERS</a>
-<a href='posterlist.php'>ABSTRACTS/POSTERS</a>
-<a href='dates.php'>DATES / ANNOUNCEMENTS</a>
-<a href='venue.php'>LOCATION AND VENUE</a>
-<a href='accommodation.php'>ACCOMMODATION</a>
-<a href='registration.php'>REGISTRATION</a>
-<a href='travel.php'>TRAVEL</a>
-<a href='proceedings.php'>PROCEEDINGS & MEDIA</a>
+<a href='/index.php'>WELCOME</a>
+<a href='/scope.php'>SCOPE AND PROGRAM</a>
+<a href='/speakers.php'>SPEAKERS</a>
+<a href='/posterlist.php'>ABSTRACTS/POSTERS</a>
+<a href='/dates.php'>DATES / ANNOUNCEMENTS</a>
+<a href='/venue.php'>LOCATION AND VENUE</a>
+<a href='/accommodation.php'>ACCOMMODATION</a>
+<a href='/registration.php'>REGISTRATION</a>
+<a href='/travel.php'>TRAVEL</a>
+<a href='/proceedings.php'>PROCEEDINGS & MEDIA</a>
 <span class="current">SOCIAL PROGRAM</span>
-<a href='prizes.php'>SUPPORT AND PRIZES</a>
-<a href='meetings.php'>SATELLITE MEETINGS</a>
-<a href='exhibitors_sponsors.php'>SPONSORS / EXHIBITORS</a>
-<a href='committees.php'>COMMITTEES</a>
-<a href='contacts.php'>CONTACTS</a>
+<a href='/prizes.php'>SUPPORT AND PRIZES</a>
+<a href='/meetings.php'>SATELLITE MEETINGS</a>
+<a href='/exhibitors_sponsors.php'>SPONSORS / EXHIBITORS</a>
+<a href='/committees.php'>COMMITTEES</a>
+<a href='/contacts.php'>CONTACTS</a>
 <table width="165" border="0" cellpadding="0" cellspacing="0" id="anuTable">
                 <tr>
                   <td class="sponsorcell"><p>MAJOR SPONSORS</p></td>
@@ -115,7 +115,7 @@ your tour to avoid disappointment.
 <h2>Public lecture</h2>
 <p><b>Australia, the land of things that bite, sting and kill! Is it really that bad?</b></p>
 
-<img src="_images/seymour.jpg" style='float:right; padding-left:25px; padding-bottom:25px;' alt='Professor Jamie Syemour' />
+<img src="/_images/seymour.jpg" style='float:right; padding-left:25px; padding-bottom:25px;' alt='Professor Jamie Syemour' />
 <p>Speaker: Dr. Jamie Seymour</p>
 <p>Time: Wednesday 26 July 2017</p>
 
