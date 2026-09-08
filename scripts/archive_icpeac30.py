@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 from html import unescape
 import os
 from pathlib import Path, PurePosixPath
@@ -103,19 +104,43 @@ def restore(root: Path) -> tuple[list[Path], int]:
     return pages, asset_count
 
 
-def verify(root: Path, pages: int, assets: int) -> None:
+def verify_source(root: Path, pages: list[Path], assets: int) -> None:
+    """Verify the authoritative source set before adding deployment helpers."""
+    manifest_paths = [output_path(root, key) for key in load_manifest()]
+    missing = [path.relative_to(root) for path in manifest_paths if not path.is_file()]
     files = [path for path in root.rglob("*") if path.is_file()]
     total = len(files)
     required = root / "_files" / "icpeacabstract.tar.gz"
-    if (pages, assets, total) != (EXPECTED_PAGES, EXPECTED_ASSETS, EXPECTED_TOTAL):
+    if missing:
+        raise RuntimeError(f"archive verification failed: missing source paths: {missing}")
+    if (len(pages), assets, len(manifest_paths), total) != (
+        EXPECTED_PAGES,
+        EXPECTED_ASSETS,
+        EXPECTED_TOTAL,
+        EXPECTED_TOTAL,
+    ):
         raise RuntimeError(
             "archive verification failed: "
-            f"observed {pages} rendered pages, {assets} assets, {total} files; "
-            f"expected {EXPECTED_PAGES}, {EXPECTED_ASSETS}, {EXPECTED_TOTAL}"
+            f"observed {len(pages)} rendered pages, {assets} assets, "
+            f"{len(manifest_paths)} manifest paths, {total} files; expected "
+            f"{EXPECTED_PAGES}, {EXPECTED_ASSETS}, {EXPECTED_TOTAL}, {EXPECTED_TOTAL}"
         )
     if not required.is_file():
         raise RuntimeError(f"archive verification failed: missing {required.relative_to(root)}")
-    print(f"Verified archive: {pages} rendered pages, {assets} assets, {total} files")
+    print(
+        f"Verified source archive: {len(pages)} rendered source responses, "
+        f"{assets} assets, {total} manifest/source files"
+    )
+
+
+def asset_digests(root: Path, pages: list[Path]) -> dict[Path, str]:
+    """Record source asset digests so deployment cannot silently alter binaries."""
+    page_set = set(pages)
+    return {
+        path.relative_to(root): hashlib.sha256(path.read_bytes()).hexdigest()
+        for key in load_manifest()
+        if (path := output_path(root, key)) not in page_set
+    }
 
 
 def split_reference(reference: str) -> tuple[str, str]:
@@ -126,11 +151,15 @@ def split_reference(reference: str) -> tuple[str, str]:
 
 
 def deploy_reference(reference: str, page: Path, root: Path) -> str:
-    """Make an origin-rooted reference relative to its archived page."""
+    """Make an internal reference suitable for the static browser view."""
     lower = reference.lower()
     if reference.startswith("//") or lower.startswith(EXTERNAL_SCHEMES):
         return reference
     path, suffix = split_reference(reference)
+    if not path:
+        return reference
+    if path.lower().endswith(".php"):
+        path = path[:-4] + ".html"
     if path.startswith("/"):
         archive_path = path.lstrip("/")
         if not archive_path or archive_path.endswith("/"):
@@ -139,15 +168,26 @@ def deploy_reference(reference: str, page: Path, root: Path) -> str:
         page_directory = page.parent.relative_to(root).as_posix()
         archive_path = posixpath.normpath(posixpath.join(page_directory, path))
         if archive_path not in MISSING_REFERENCE_FALLBACKS:
-            return reference
+            return path + suffix
     archive_path = MISSING_REFERENCE_FALLBACKS.get(archive_path, archive_path)
     relative = posixpath.relpath(archive_path, page.parent.relative_to(root).as_posix())
     return relative + suffix
 
 
-def prepare_pages(root: Path, pages: list[Path]) -> None:
-    """Rewrite references in rendered pages, without touching asset bytes."""
-    for page in pages:
+def create_static_view(root: Path, source_pages: list[Path]) -> list[Path]:
+    """Create and rewrite text-only pages for GitHub Pages deployment."""
+    browser_pages: list[Path] = []
+    for source in source_pages:
+        relative = source.relative_to(root)
+        if source.suffix.lower() == ".php" and source.name.lower() != "index.php":
+            page = source.with_suffix(".html")
+            page.write_bytes(source.read_bytes())
+        elif relative in {Path("index.html"), Path("iswamp/index.html")}:
+            page = source
+        else:
+            # index.php is retained as source; the matching index.html is the view.
+            continue
+
         text = page.read_text(encoding="utf-8")
 
         def replace(match: re.Match[str]) -> str:
@@ -155,11 +195,16 @@ def prepare_pages(root: Path, pages: list[Path]) -> None:
             return match.group("prefix") + match.group("quote") + value + match.group("quote")
 
         page.write_text(REFERENCE_ATTRIBUTE.sub(replace, text), encoding="utf-8")
+        browser_pages.append(page)
+    return browser_pages
 
 
-def validate_references(root: Path, pages: list[Path]) -> None:
+def validate_static_view(
+    root: Path, pages: list[Path], source_pages: list[Path], before: dict[Path, str]
+) -> None:
     """Fail with an explicit list of local page references absent from the archive."""
     unresolved: list[str] = []
+    php_references: list[str] = []
     for page in pages:
         text = page.read_text(encoding="utf-8")
         for match in REFERENCE_ATTRIBUTE.finditer(text):
@@ -175,6 +220,8 @@ def validate_references(root: Path, pages: list[Path]) -> None:
             path, _ = split_reference(reference)
             if not path:
                 continue
+            if path.lower().endswith(".php"):
+                php_references.append(f"{page.relative_to(root)}: {reference}")
             candidate = Path(posixpath.normpath((page.parent / unquote(path)).as_posix()))
             if not candidate.is_absolute():
                 candidate = Path.cwd() / candidate
@@ -190,7 +237,53 @@ def validate_references(root: Path, pages: list[Path]) -> None:
     if unresolved:
         details = "\n  ".join(unresolved)
         raise RuntimeError(f"unresolved internal references ({len(unresolved)}):\n  {details}")
-    print(f"Validated internal references in {len(pages)} rendered pages")
+    if php_references:
+        details = "\n  ".join(php_references)
+        raise RuntimeError(
+            f"internal browser references to PHP ({len(php_references)}):\n  {details}"
+        )
+
+    manifest_paths = [output_path(root, key) for key in load_manifest()]
+    missing = [path.relative_to(root) for path in manifest_paths if not path.is_file()]
+    if missing:
+        raise RuntimeError(f"deployment removed source paths: {missing}")
+    after = asset_digests(root, source_pages)
+    if before != after:
+        raise RuntimeError("binary/source asset bytes changed during deployment preparation")
+
+    required_views = [
+        "scope.html",
+        "posterlist.html",
+        "speakers.html",
+        "registration.html",
+        "iswamp/program.html",
+    ]
+    absent_views = [name for name in required_views if not (root / name).is_file()]
+    if absent_views:
+        raise RuntimeError(f"required browser pages were not generated: {absent_views}")
+    empty_views = [
+        name
+        for name in required_views
+        if not (root / name).read_text(encoding="utf-8").strip()
+    ]
+    if empty_views:
+        raise RuntimeError(f"required browser pages have no displayable content: {empty_views}")
+    root_index = (root / "index.html").read_text(encoding="utf-8")
+    if "scope.html" not in root_index or "scope.php" in root_index:
+        raise RuntimeError("index.html navigation was not rewritten to scope.html")
+    for name in ("scope.html", "iswamp/program.html"):
+        text = (root / name).read_text(encoding="utf-8")
+        if not re.search(r"href\s*=\s*(['\"])index\.html\1", text, re.IGNORECASE):
+            raise RuntimeError(f"{name} WELCOME navigation does not use index.html")
+
+    alias_count = sum(
+        source.suffix.lower() == ".php" and source.name.lower() != "index.php"
+        for source in source_pages
+    )
+    print(
+        f"Validated static view: {alias_count} HTML aliases, {len(pages)} browser pages, "
+        "zero internal PHP navigation links, all source asset bytes unchanged"
+    )
 
 
 def main() -> int:
@@ -203,9 +296,10 @@ def main() -> int:
     temporary = Path(tempfile.mkdtemp(prefix=".icpeac30-", dir=output.parent))
     try:
         pages, assets = restore(temporary)
-        verify(temporary, len(pages), assets)
-        prepare_pages(temporary, pages)
-        validate_references(temporary, pages)
+        verify_source(temporary, pages, assets)
+        digests = asset_digests(temporary, pages)
+        browser_pages = create_static_view(temporary, pages)
+        validate_static_view(temporary, browser_pages, pages, digests)
         if output.exists():
             shutil.rmtree(output)
         os.replace(temporary, output)
