@@ -4,65 +4,41 @@
 from __future__ import annotations
 
 import argparse
-from collections import deque
-from html.parser import HTMLParser
 import os
 from pathlib import Path, PurePosixPath
-import re
 import shutil
 import ssl
 import sys
 import tempfile
 import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, unquote, urljoin, urlsplit, urlunsplit
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 
 ORIGIN = "https://www.icpeac30.edu.au"
+MANIFEST = Path(__file__).with_name("icpeac30_manifest.txt")
 EXPECTED_PAGES = 29
 EXPECTED_ASSETS = 241
 EXPECTED_TOTAL = 270
-SEEDS = ("/", "/index.php", "/iswamp/", "/iswamp/index.php")
 HTML_TYPES = {"text/html", "application/xhtml+xml"}
-TEXT_TYPES = HTML_TYPES | {"text/css", "text/javascript", "application/javascript"}
-EXCLUDED_404S = {"/local_research.php", "/satellite_meetings.php"}
-CSS_URL_RE = re.compile(r"url\(\s*(['\"]?)([^\s)'\"]+)\1\s*\)", re.IGNORECASE)
 
 
-class References(HTMLParser):
-    """Collect resource and navigation references without changing page bytes."""
-
-    def __init__(self) -> None:
-        super().__init__(convert_charrefs=True)
-        self.values: list[str] = []
-
-    def handle_starttag(self, _tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        for name, value in attrs:
-            if name.lower() in {"href", "src", "action", "poster", "data"} and value:
-                self.values.append(value)
-
-
-def canonical(reference: str, parent: str) -> str | None:
-    """Return an in-scope path/query key, forcing all requests to the www origin."""
-    if not reference or reference.startswith(("#", "data:", "mailto:", "javascript:")):
-        return None
-    absolute = urljoin(ORIGIN + parent, reference)
-    parsed = urlsplit(absolute)
-    if parsed.scheme not in {"http", "https"} or parsed.hostname not in {
-        "icpeac30.edu.au",
-        "www.icpeac30.edu.au",
-    }:
-        return None
-    path = unquote(parsed.path or "/")
-    if path in EXCLUDED_404S:
-        return None
-    # A trailing empty query is significant here: the site's font CSS references
-    # EOT compatibility copies as "font.eot?#iefix", and the verified archive
-    # stores those responses as separate filenames ending in "?".
-    had_query_marker = "?" in absolute.split("#", 1)[0]
-    query = parsed.query
-    return path + (("?" + query) if (query or had_query_marker) else "")
+def load_manifest() -> list[str]:
+    """Load and validate the authoritative path/query list."""
+    entries = [line.strip() for line in MANIFEST.read_text(encoding="utf-8").splitlines()]
+    if any(not entry or not entry.startswith("/") for entry in entries):
+        raise RuntimeError(f"invalid blank or non-absolute entry in {MANIFEST}")
+    if len(entries) != EXPECTED_TOTAL:
+        raise RuntimeError(
+            f"manifest has {len(entries)} entries; expected {EXPECTED_TOTAL}"
+        )
+    if len(set(entries)) != len(entries):
+        raise RuntimeError("manifest contains duplicate source entries")
+    destinations = [output_path(Path("."), entry) for entry in entries]
+    if len(set(destinations)) != len(destinations):
+        raise RuntimeError("manifest source entries map to duplicate archive paths")
+    return entries
 
 
 def request_url(key: str) -> str:
@@ -83,6 +59,7 @@ def output_path(root: Path, key: str) -> Path:
 
 
 def fetch(key: str, attempts: int = 3) -> tuple[bytes, str]:
+    """Fetch one manifest entry, retrying transient errors but never ignoring 404s."""
     url = request_url(key)
     for attempt in range(1, attempts + 1):
         try:
@@ -90,46 +67,22 @@ def fetch(key: str, attempts: int = 3) -> tuple[bytes, str]:
             with urlopen(request, timeout=60, context=ssl.create_default_context()) as response:
                 content_type = response.headers.get_content_type().lower()
                 return response.read(), content_type
-        except HTTPError:
-            raise
+        except HTTPError as error:
+            if error.code < 500 or attempt == attempts:
+                raise RuntimeError(f"HTTP {error.code} while downloading {url}") from error
         except (URLError, TimeoutError, OSError) as error:
             if attempt == attempts:
                 raise RuntimeError(f"failed to download {url}: {error}") from error
-            time.sleep(attempt * 2)
+        time.sleep(attempt * 2)
     raise AssertionError("unreachable")
 
 
-def references(data: bytes, content_type: str) -> list[str]:
-    text = data.decode("utf-8", errors="replace")
-    found: list[str] = []
-    if content_type in HTML_TYPES:
-        parser = References()
-        parser.feed(text)
-        found.extend(parser.values)
-    if content_type == "text/css":
-        found.extend(match.group(2) for match in CSS_URL_RE.finditer(text))
-    return found
-
-
-def crawl(root: Path) -> tuple[int, int]:
-    pending = deque(SEEDS)
-    visited: set[str] = set()
+def restore(root: Path) -> tuple[int, int]:
+    """Download every manifest entry without modifying response bodies."""
     page_count = 0
     asset_count = 0
-
-    while pending:
-        key = pending.popleft()
-        if key in visited:
-            continue
-        visited.add(key)
-        try:
-            data, content_type = fetch(key)
-        except HTTPError as error:
-            if error.code == 404:
-                print(f"Skipping genuine 404: {request_url(key)}", file=sys.stderr)
-                continue
-            raise RuntimeError(f"HTTP {error.code} while downloading {request_url(key)}") from error
-
+    for key in load_manifest():
+        data, content_type = fetch(key)
         destination = output_path(root, key)
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(data)
@@ -137,13 +90,6 @@ def crawl(root: Path) -> tuple[int, int]:
             page_count += 1
         else:
             asset_count += 1
-
-        if content_type in TEXT_TYPES:
-            for value in references(data, content_type):
-                child = canonical(value, key.partition("?")[0])
-                if child is not None and child not in visited:
-                    pending.append(child)
-
     return page_count, asset_count
 
 
@@ -171,7 +117,7 @@ def main() -> int:
 
     temporary = Path(tempfile.mkdtemp(prefix=".icpeac30-", dir=output.parent))
     try:
-        pages, assets = crawl(temporary)
+        pages, assets = restore(temporary)
         verify(temporary, pages, assets)
         if output.exists():
             shutil.rmtree(output)
