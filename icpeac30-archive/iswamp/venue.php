@@ -5,7 +5,7 @@
 <title>ISWAMP 2017</title>
 
 <link href="_includes/style.css" rel="stylesheet" type="text/css" />
-<link rel="shortcut icon" href="/iswamp/pics/iswampfavicon.ico">
+<link rel="shortcut icon" href="../favicon.ico">
 <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,7 @@
       <tr>
         <td align="center" valign="middle" class="header" ><table width="100%" border="0" cellpadding="0" cellspacing="0" id="headerTable">
               <tr>
-                <td align="center" valign="middle" class="logoCell"><img src="/iswamp/pics/iswampLogo2.png" width="188" height="154" /></td>
+                <td align="center" valign="middle" class="logoCell"><img src="pics/iswampLogo2.png" width="188" height="154" /></td>
                 <td align="left" valign="middle" class="pageTitleCell"><span class="icpeacHeading"><span class="icpeacHeading-title">satellites to icpeac 2017
 </span><span class="icpeacHeading-subtitle" style="padding-bottom:0px;">Intense field, Short Wavelength Atomic and Molecular Processes (ISwamp)</span>
 <span class="icpeacHeading-date">July 22-24, Ship Inn, South Bank, Brisbane, Australia </span>               
@@ -33,16 +33,16 @@
         <td align="center" valign="top" class="contentCell"><table width="900" border="0" cellpadding="0" cellspacing="0" id="contentTable">
           <tr>
             <td align="left" valign="top" class="links">
-<a href='/iswamp/index.php'>HOME</a>
+<a href='index.php'>HOME</a>
 <span class="current">LOCATION AND VENUE</span>
-<a href='/iswamp/accommodation.php'>ACCOMMODATION</a>
-<a href='/iswamp/registration.php'>REGISTRATION</a>
-<a href='/iswamp/travel.php'>TRAVEL</a>
-<a href='/iswamp/contacts.php'>CONTACT</a>
-<a href='/iswamp/committee.php'>LOCAL COMMITTEE</a>
-<a href='/iswamp/board.php'>ADVISORY BOARD</a>
-<a href='/iswamp/program.php'>PROGRAM</a>
-<a href='/iswamp/submission.php'>ABSTRACT SUBMISSION</a>
+<a href='accommodation.php'>ACCOMMODATION</a>
+<a href='registration.php'>REGISTRATION</a>
+<a href='travel.php'>TRAVEL</a>
+<a href='contacts.php'>CONTACT</a>
+<a href='committee.php'>LOCAL COMMITTEE</a>
+<a href='board.php'>ADVISORY BOARD</a>
+<a href='program.php'>PROGRAM</a>
+<a href='submission.php'>ABSTRACT SUBMISSION</a>
 
 <table width="165" border="0" cellpadding="0" cellspacing="0" id="anuTable">
   <tbody>
@@ -50,7 +50,7 @@
       <td class="sponsorcell"><p style="text-transform:capitalize;">Main Conference</p></td>
     </tr>
     <tr>
-      <td><a href='/'>ICPEAC30</a></td>
+      <td><a href='../index.html'>ICPEAC30</a></td>
     </tr>
   </tbody>
 </table>

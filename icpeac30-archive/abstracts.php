@@ -32,22 +32,22 @@
         <td align="center" valign="top" class="contentCell"><table width="900" border="0" cellpadding="0" cellspacing="0" id="contentTable">
           <tr>
             <td align="left" valign="top" class="links">
-<a href='/index.php'>WELCOME</a>
-<a href='/scope.php'>SCOPE AND PROGRAM</a>
-<a href='/speakers.php'>SPEAKERS</a>
-<a href='/posterlist.php'>ABSTRACTS/POSTERS</a>
-<a href='/dates.php'>DATES / ANNOUNCEMENTS</a>
-<a href='/venue.php'>LOCATION AND VENUE</a>
-<a href='/accommodation.php'>ACCOMMODATION</a>
-<a href='/registration.php'>REGISTRATION</a>
-<a href='/travel.php'>TRAVEL</a>
-<a href='/proceedings.php'>PROCEEDINGS & MEDIA</a>
-<a href='/social_programme.php'>SOCIAL PROGRAM</a>
-<a href='/prizes.php'>SUPPORT AND PRIZES</a>
-<a href='/meetings.php'>SATELLITE MEETINGS</a>
-<a href='/exhibitors_sponsors.php'>SPONSORS / EXHIBITORS</a>
-<a href='/committees.php'>COMMITTEES</a>
-<a href='/contacts.php'>CONTACTS</a>
+<a href='index.php'>WELCOME</a>
+<a href='scope.php'>SCOPE AND PROGRAM</a>
+<a href='speakers.php'>SPEAKERS</a>
+<a href='posterlist.php'>ABSTRACTS/POSTERS</a>
+<a href='dates.php'>DATES / ANNOUNCEMENTS</a>
+<a href='venue.php'>LOCATION AND VENUE</a>
+<a href='accommodation.php'>ACCOMMODATION</a>
+<a href='registration.php'>REGISTRATION</a>
+<a href='travel.php'>TRAVEL</a>
+<a href='proceedings.php'>PROCEEDINGS & MEDIA</a>
+<a href='social_programme.php'>SOCIAL PROGRAM</a>
+<a href='prizes.php'>SUPPORT AND PRIZES</a>
+<a href='meetings.php'>SATELLITE MEETINGS</a>
+<a href='exhibitors_sponsors.php'>SPONSORS / EXHIBITORS</a>
+<a href='committees.php'>COMMITTEES</a>
+<a href='contacts.php'>CONTACTS</a>
 <table width="165" border="0" cellpadding="0" cellspacing="0" id="anuTable">
                 <tr>
                   <td class="sponsorcell"><p>MAJOR SPONSORS</p></td>
@@ -100,7 +100,7 @@
 <p><i>Please check abstracts submission deadlines for the ICPEAC satellites on their respective websites</i></p>
 
 <h3>Preparation</h3>
-<p>The length of each abstract is strictly limited to one page. Abstracts must be prepared using the supplied <a href='/_files/icpeacabstract.doc'>Word</a> or <a href='/_files/icpeacabstract.tar.gz'>LaTeX</a> templates. When using the templates, do not make any changes or modifications to the page layout or paragraph styles. Before submission the abstract must be converted into PDF format. It should look like this <a href='/_files/icpeacabstract.pdf'>sample abstract</a>. The file size should not exceed 5 MB. Ideally, keep it small!</p>
+<p>The length of each abstract is strictly limited to one page. Abstracts must be prepared using the supplied <a href='_files/icpeacabstract.doc'>Word</a> or <a href='_files/icpeacabstract.tar.gz'>LaTeX</a> templates. When using the templates, do not make any changes or modifications to the page layout or paragraph styles. Before submission the abstract must be converted into PDF format. It should look like this <a href='_files/icpeacabstract.pdf'>sample abstract</a>. The file size should not exceed 5 MB. Ideally, keep it small!</p>
 
 <p>Note: The PDF file of abstract should be named as per the following example:</p>
 

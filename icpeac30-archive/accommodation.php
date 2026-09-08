@@ -32,22 +32,22 @@
         <td align="center" valign="top" class="contentCell"><table width="900" border="0" cellpadding="0" cellspacing="0" id="contentTable">
           <tr>
             <td align="left" valign="top" class="links">
-<a href='/index.php'>WELCOME</a>
-<a href='/scope.php'>SCOPE AND PROGRAM</a>
-<a href='/speakers.php'>SPEAKERS</a>
-<a href='/posterlist.php'>ABSTRACTS/POSTERS</a>
-<a href='/dates.php'>DATES / ANNOUNCEMENTS</a>
-<a href='/venue.php'>LOCATION AND VENUE</a>
+<a href='index.php'>WELCOME</a>
+<a href='scope.php'>SCOPE AND PROGRAM</a>
+<a href='speakers.php'>SPEAKERS</a>
+<a href='posterlist.php'>ABSTRACTS/POSTERS</a>
+<a href='dates.php'>DATES / ANNOUNCEMENTS</a>
+<a href='venue.php'>LOCATION AND VENUE</a>
 <span class="current">ACCOMMODATION</span>
-<a href='/registration.php'>REGISTRATION</a>
-<a href='/travel.php'>TRAVEL</a>
-<a href='/proceedings.php'>PROCEEDINGS & MEDIA</a>
-<a href='/social_programme.php'>SOCIAL PROGRAM</a>
-<a href='/prizes.php'>SUPPORT AND PRIZES</a>
-<a href='/meetings.php'>SATELLITE MEETINGS</a>
-<a href='/exhibitors_sponsors.php'>SPONSORS / EXHIBITORS</a>
-<a href='/committees.php'>COMMITTEES</a>
-<a href='/contacts.php'>CONTACTS</a>
+<a href='registration.php'>REGISTRATION</a>
+<a href='travel.php'>TRAVEL</a>
+<a href='proceedings.php'>PROCEEDINGS & MEDIA</a>
+<a href='social_programme.php'>SOCIAL PROGRAM</a>
+<a href='prizes.php'>SUPPORT AND PRIZES</a>
+<a href='meetings.php'>SATELLITE MEETINGS</a>
+<a href='exhibitors_sponsors.php'>SPONSORS / EXHIBITORS</a>
+<a href='committees.php'>COMMITTEES</a>
+<a href='contacts.php'>CONTACTS</a>
 <table width="165" border="0" cellpadding="0" cellspacing="0" id="anuTable">
                 <tr>
                   <td class="sponsorcell"><p>MAJOR SPONSORS</p></td>
@@ -86,7 +86,7 @@
 <p>Special accommodation rates have been secured for delegates attending the Conference. To receive these special rates accommodation must be booked when registering online. All rates are per room per night unless otherwise specified and are in Australian dollars. Breakfast is not included in room rates.</p>
 
 <h3>Pullman Cairns International</h3>
-<img src="/_images/Pullman-Cairns.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
+<img src="_images/Pullman-Cairns.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
 <p>Distance from conference venue: 7 minute walk<br />
 Location: 17 Abbott Street, Cairns<br />
 <a href="http://www.pullmanhotels.com">www.pullmanhotels.com</a></p>
@@ -99,7 +99,7 @@ Harbour View - $229<br />
 Premium Harbour View - $279</p>
 
 <h3>Park Regis City Quays</h3>
-<img src="/_images/Park-Regis.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
+<img src="_images/Park-Regis.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
 <p>Distance from conference venue: 4 minute walk<br />
 Location: 6 – 8 Lake Street, Cairns<br />
 <a href="http://www.parkregiscityquays.com.au">www.parkregiscityquays.com.au</a></p>
@@ -112,7 +112,7 @@ Superior One Bedroom Apartment - $195<br />
 Superior Two Bedroom Apartment - $285</p>
 
 <h3>Piermonde Apartments</h3>
-<img src="/_images/Three-Bedroom-Apartment.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
+<img src="_images/Three-Bedroom-Apartment.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
 <p>Distance from conference venue: 4 minute walk<br />
 Location: 2 – 8 Lake Street, Cairns<br />
 <a href="http://www.piermondeapartments.com.au">www.piermondeapartments.com.au</a></p>
@@ -124,7 +124,7 @@ Location: 2 – 8 Lake Street, Cairns<br />
 Three Bedroom Apartment - $385</p>
 
 <h3>Rydges Plaza Cairns</h3>
-<img src="/_images/Standard_Queen_Hero.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
+<img src="_images/Standard_Queen_Hero.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
 <p>Distance from conference venue: 6 minute walk<br />
 Location: 50 Grafton St, Cairns<br />
 <a href="http://www.rydges.com/accommodation/cairns-qld/plaza-cairns-hotel">www.rydges.com/accommodation/cairns-qld/plaza-cairns-hotel</a></p>
@@ -137,7 +137,7 @@ Standard Room - $164<br />
 Deluxe Room - $184</p>
 
 <h3>IBIS STYLES CAIRNS</h3>
-<img src="/_images/Ibis-Styles.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
+<img src="_images/Ibis-Styles.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
 <p>Distance from conference venue: 15 minute walk<br />
 Location: 15 Florence Street (corner of Florence &amp; Lake Streets), Cairns<br />
 <a href="http://www.accorhotels.com/gb/hotel-7510-ibis-styles-cairns/index.shtml">www.accorhotels.com/gb/hotel-7510-ibis-styles-cairns/index.shtml</a></p>
@@ -150,7 +150,7 @@ Superior Room - $159<br />
 Family Room - $184</p>
 
 <h3>HIDES HOTEL CAIRNS</h3>
-<img src="/_images/hides-hotel.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
+<img src="_images/hides-hotel.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
 <p>Distance from conference venue: 10 minute walk<br />
 Location: 87 Lake St, Cairns<br />
 <a href="http://www.hideshotel.com.au">www.hideshotel.com.au</a></p>
@@ -162,7 +162,7 @@ Heritage Twin - $106<br />
 Superior Double – $142</p>
 
 <h3>GILLIGAN BACKPACKERS HOTEL &amp; RESORT</h3>
-<img src="/_images/gilligan.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
+<img src="_images/gilligan.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
 <p>Distance from conference venue: 8 minute walk<br />
 Location: 57-89 Grafton St, Cairns<br />
 <a href="http://www.gilligans.com.au">www.gilligans.com.au</a></p>
@@ -180,7 +180,7 @@ Triple hotel room – from $126</p>
 
 
 <h3>NOVOTEL CAIRNS OASIS RESORT</h3>
-<img src="/_images/novotel.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
+<img src="_images/novotel.jpg" style="float:right;padding-left:15px;padding-bottom:15px;">
 <p>Distance from conference venue: 15 minute walk<br />
 Location: 122 Lake St, Cairns<br />
 <a href="http://www.novotelcairnsresort.com.au">www.novotelcairnsresort.com.au</a></p>
